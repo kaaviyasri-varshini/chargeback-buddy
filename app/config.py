@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     paypal_webhook_id: str = ""
     
     # AI
-    anthropic_api_key: str = ""
-    ai_model: str = "claude-sonnet-4-20250514"
+    gemini_api_key: str = ""
+    ai_model: str = "gemini-2.0-flash-exp"  # or gemini-1.5-pro, gemini-1.5-flash
     
     # Application
     demo_mode: bool = True

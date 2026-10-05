@@ -7,7 +7,7 @@ An AI-powered PayPal dispute management system that helps small online sellers m
 ChargeBack Buddy uses:
 - **MongoDB + Beanie ODM** for data persistence with change streams for live updates
 - **NiceGUI** (FastAPI/Starlette) for a rich, modern Python-based UI
-- **Anthropic Claude** for AI-powered dispute analysis
+- **Google Gemini** for AI-powered dispute analysis
 - **PayPal Disputes API** for webhook handling and evidence submission
 
 ## 🚀 Quick Start
@@ -15,13 +15,23 @@ ChargeBack Buddy uses:
 ### Prerequisites
 
 - Python 3.11+
-- Docker & Docker Compose (for local MongoDB)
-- MongoDB Atlas account (optional, for cloud deployment)
+- MongoDB (local via Homebrew or Docker, or MongoDB Atlas free tier)
+- Google AI Studio API key (free at [aistudio.google.com](https://aistudio.google.com/app/apikey))
+- PayPal Sandbox credentials (optional for demo mode)
 
 ### Installation
 
 1. **Clone and setup environment:**
 
+**Using Miniconda/Conda:**
+```bash
+cd chargeback-buddy
+conda create -n chargeback python=3.11 -y
+conda activate chargeback
+pip install -r requirements.txt
+```
+
+**Or using venv:**
 ```bash
 cd chargeback-buddy
 python -m venv venv
@@ -35,6 +45,16 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env with your credentials
 ```
+
+**Get your free Gemini API key:**
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Click "Create API Key"
+3. Copy and paste into `.env` as `GEMINI_API_KEY=your_key_here`
+
+**Recommended models:**
+- `gemini-2.0-flash-exp` - Fastest, best for real-time analysis (default)
+- `gemini-1.5-pro` - More reasoning power, slightly slower
+- `gemini-1.5-flash` - Good balance of speed and quality
 
 3. **Start MongoDB (local development):**
 

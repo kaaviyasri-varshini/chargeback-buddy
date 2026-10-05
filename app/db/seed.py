@@ -3,7 +3,7 @@
 import argparse
 import asyncio
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from decimal import Decimal
 from random import choice, randint, random, shuffle
 
@@ -75,7 +75,7 @@ async def seed_disputes(reset: bool = False) -> None:
         logger.info(f"Database already contains {existing_count} disputes. Use --reset to clear.")
         return
     
-    now = datetime.utcnow()
+    now = datetime.now(UTC).replace(tzinfo=None)
     disputes_data = []
     
     # Scenario 1: Strong case - Item not received with solid tracking (FIGHT recommended)

@@ -6,7 +6,8 @@ from enum import Enum
 from typing import Any, Optional
 
 from beanie import Document, Indexed
-from pydantic import Field, field_serializer
+from pydantic import Field, field_serializer, field_validator
+from bson import Decimal128
 
 
 class DisputeStatus(str, Enum):
@@ -96,6 +97,17 @@ class Dispute(Document):
             "created_at",
             [("status", 1), ("due_by", 1)],
         ]
+        bson_encoders = {
+            Decimal: lambda v: Decimal128(str(v))
+        }
+    
+    @field_validator("amount", mode="before")
+    @classmethod
+    def validate_amount(cls, v):
+        """Convert Decimal128 to Decimal."""
+        if isinstance(v, Decimal128):
+            return Decimal(str(v))
+        return v
     
     @field_serializer("amount")
     def serialize_amount(self, value: Decimal) -> str:
@@ -155,6 +167,17 @@ class AgentAnalysis(Document):
             "created_at",
             [("dispute_id", 1), ("created_at", -1)],
         ]
+        bson_encoders = {
+            Decimal: lambda v: Decimal128(str(v))
+        }
+    
+    @field_validator("refund_loss", "fight_expected_loss", "fighting_cost", mode="before")
+    @classmethod
+    def validate_decimal(cls, v):
+        """Convert Decimal128 to Decimal."""
+        if isinstance(v, Decimal128):
+            return Decimal(str(v))
+        return v
     
     @field_serializer("refund_loss", "fight_expected_loss", "fighting_cost")
     def serialize_decimal(self, value: Decimal) -> str:
