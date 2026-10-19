@@ -2,7 +2,7 @@
 
 import logging
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -14,11 +14,11 @@ from app.db.documents import ALL_DOCUMENTS
 logger = logging.getLogger(__name__)
 
 # Global client instance
-_client: AsyncIOMotorClient | None = None
+_client: Optional[AsyncIOMotorClient] = None
 _change_streams_available: bool = False
 
 
-async def init_db(db_name: str | None = None) -> None:
+async def init_db(db_name: Optional[str] = None) -> None:
     """
     Initialize MongoDB connection and Beanie ODM.
     

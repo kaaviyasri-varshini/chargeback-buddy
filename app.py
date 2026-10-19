@@ -49,7 +49,7 @@ async def home():
     from app.ui.layout import create_layout
     from app.ui.pages.dashboard import dashboard_page
     
-    with create_layout():
+    with create_layout(current_page='dashboard'):
         await dashboard_page()
 
 
@@ -59,8 +59,18 @@ async def inbox():
     from app.ui.layout import create_layout
     from app.ui.pages.inbox import inbox_page
     
-    with create_layout():
+    with create_layout(current_page='inbox'):
         await inbox_page()
+
+
+# Route: Audit Log
+@ui.page('/audit')
+async def audit():
+    from app.ui.layout import create_layout
+    from app.ui.pages.audit import audit_page
+    
+    with create_layout(current_page='audit'):
+        await audit_page()
 
 
 # Route: Settings
@@ -69,7 +79,7 @@ async def settings_route():
     from app.ui.layout import create_layout
     from app.ui.pages.settings import settings_page
     
-    with create_layout():
+    with create_layout(current_page='settings'):
         await settings_page()
 
 

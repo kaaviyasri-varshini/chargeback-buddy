@@ -1,4 +1,4 @@
-"""Disputes inbox page with filterable table."""
+"""Disputes inbox page with enhanced search, filters, and table."""
 
 from datetime import datetime
 
@@ -8,29 +8,43 @@ from app.db.documents import Dispute, AgentAnalysis, DisputeStatus, AgentDecisio
 
 
 async def inbox_page():
-    """Render the disputes inbox page."""
+    """Render the premium disputes inbox page."""
     
     # Page header
-    with ui.row().classes('w-full items-center justify-between mb-6'):
-        ui.label('Disputes Inbox').classes('text-3xl font-bold text-white')
+    with ui.row().classes('w-full items-center justify-between mb-8'):
+        with ui.column().classes('gap-1'):
+            ui.label('Disputes Inbox').classes('text-3xl font-bold')
+            ui.label('Manage and review all PayPal disputes').classes('text-sm text-slate-400')
+        
         with ui.row().classes('gap-2'):
-            ui.button('Refresh', icon='refresh', on_click=lambda: ui.notify('Refreshed!', type='positive'))
-            ui.button('Simulate Dispute', icon='add_circle', on_click=lambda: ui.notify('Demo dispute simulation coming soon!', type='info')).props('outline')
+            ui.button('Refresh', icon='refresh', on_click=lambda: ui.notify('Refreshed', type='positive')).props('outline size=sm')
+            ui.button('Export', icon='download', on_click=lambda: ui.notify('Export feature coming soon', type='info')).props('outline size=sm')
     
-    # Filters
-    with ui.card().classes('glass-card w-full mb-4'):
-        with ui.row().classes('items-center gap-4 w-full'):
-            ui.label('Filters:').classes('font-semibold')
+    # Filters bar
+    with ui.card().classes('premium-card p-4 mb-6'):
+        with ui.row().classes('items-center gap-4 w-full flex-wrap'):
+            # Search
+            search_input = ui.input(placeholder='Search by ID, buyer, or email...').props('outlined dense').classes('w-80')
+            search_input.classes('flex-grow-0')
             
+            # Status filter
             status_filter = ui.select(
-                ['All', 'Open', 'Waiting for Response', 'Under Review', 'Resolved'],
-                value='All',
+                ['All Statuses', 'Open', 'Waiting for Response', 'Under Review', 'Resolved'],
+                value='All Statuses',
                 label='Status'
-            ).classes('w-48')
+            ).classes('w-48').props('outlined dense')
             
-            ui.input(placeholder='Search...', ).props('outlined dense').classes('flex-1')
+            # Sort by
+            sort_select = ui.select(
+                ['Due Date (Urgent First)', 'Amount (High to Low)', 'Amount (Low to High)', 'Created (Newest)', 'Created (Oldest)'],
+                value='Due Date (Urgent First)',
+                label='Sort by'
+            ).classes('w-56').props('outlined dense')
             
-            ui.button('Clear', icon='clear', on_click=lambda: ui.notify('Filters cleared')).props('flat')
+            ui.space()
+            
+            # Clear button
+            ui.button('Clear Filters', icon='clear', on_click=lambda: ui.notify('Filters cleared')).props('flat size=sm')
     
     # Load disputes
     try:
@@ -38,106 +52,164 @@ async def inbox_page():
         
         if not disputes:
             # Empty state
-            with ui.card().classes('glass-card w-full'):
-                with ui.column().classes('items-center justify-center p-16 gap-4'):
-                    ui.icon('inbox', size='xl').classes('text-gray-600 text-6xl')
-                    ui.label('No disputes found').classes('text-2xl text-gray-400')
-                    ui.label('Seed the database to see disputes').classes('text-gray-500')
-                    ui.button('Run: python -m app.db.seed', icon='play_arrow', on_click=lambda: ui.notify('Run this in terminal', type='info'))
+            with ui.card().classes('premium-card'):
+                with ui.column().classes('empty-state'):
+                    ui.icon('inbox', size='xl').classes('empty-state-icon')
+                    ui.label('No Disputes Found').classes('text-2xl font-semibold text-slate-300')
+                    ui.label('Load sample disputes to get started').classes('text-sm')
+                    ui.button('Load Demo Data', icon='cloud_download', 
+                            on_click=lambda: ui.notify('Run: python -m app.db.seed', type='info')).props('outline').classes('mt-4')
         else:
-            # Disputes table
-            with ui.card().classes('glass-card w-full'):
-                ui.label(f'Showing {len(disputes)} disputes').classes('text-sm text-gray-400 mb-4')
+            # Summary stats
+            with ui.row().classes('gap-4 mb-4'):
+                open_count = sum(1 for d in disputes if d.status in [DisputeStatus.OPEN, DisputeStatus.WAITING_FOR_SELLER_RESPONSE])
+                review_count = sum(1 for d in disputes if d.status == DisputeStatus.UNDER_REVIEW)
+                resolved_count = sum(1 for d in disputes if d.status == DisputeStatus.RESOLVED)
                 
-                # Table headers
-                with ui.row().classes('w-full bg-slate-800 p-3 rounded-t-lg font-semibold text-sm'):
-                    ui.label('ID').classes('w-32')
+                with ui.row().classes('items-center gap-2'):
+                    ui.label(f'{len(disputes)} total').classes('text-sm font-semibold text-slate-300')
+                    ui.label('•').classes('text-slate-600')
+                    ui.label(f'{open_count} open').classes('text-sm text-blue-400')
+                    ui.label('•').classes('text-slate-600')
+                    ui.label(f'{review_count} in review').classes('text-sm text-amber-400')
+                    ui.label('•').classes('text-slate-600')
+                    ui.label(f'{resolved_count} resolved').classes('text-sm text-green-400')
+            
+            # Disputes table
+            with ui.card().classes('premium-card p-0 overflow-hidden'):
+                # Table header
+                with ui.row().classes('data-table-header').style('padding: 14px 20px;'):
+                    ui.label('ID').classes('w-24')
                     ui.label('Buyer').classes('w-48')
                     ui.label('Amount').classes('w-24')
                     ui.label('Reason').classes('flex-1')
-                    ui.label('Status').classes('w-40')
-                    ui.label('Recommendation').classes('w-32')
-                    ui.label('Due By').classes('w-32')
-                    ui.label('Actions').classes('w-24')
+                    ui.label('Status').classes('w-36')
+                    ui.label('AI Rec.').classes('w-28 text-center')
+                    ui.label('Win %').classes('w-20 text-center')
+                    ui.label('Due').classes('w-24 text-right')
                 
                 # Table rows
-                with ui.column().classes('w-full gap-1'):
-                    for dispute in disputes[:20]:  # Limit to 20 for performance
-                        with ui.card().classes('bg-slate-800/30 hover:bg-slate-800/50 p-3 cursor-pointer transition-all'):
+                with ui.column().classes('w-full'):
+                    for i, dispute in enumerate(disputes[:50]):  # Limit to 50 for performance
+                        # Determine row styling based on urgency
+                        row_class = 'data-table-row'
+                        
+                        if dispute.due_by:
+                            days_left = (dispute.due_by - datetime.utcnow()).days
+                            if days_left < 0:
+                                row_class += ' priority-urgent'
+                            elif days_left <= 2:
+                                row_class += ' priority-high'
+                        
+                        with ui.card().classes(row_class).style('padding: 14px 20px; border-radius: 0;'):
                             with ui.row().classes('w-full items-center'):
                                 # ID
-                                ui.label(dispute.paypal_dispute_id[-8:]).classes('w-32 font-mono text-sm')
+                                ui.label(f'#{dispute.paypal_dispute_id[-6:]}').classes('w-24 font-mono text-sm font-semibold')
                                 
-                                # Buyer
+                                # Buyer info
                                 with ui.column().classes('w-48 gap-0'):
                                     ui.label(dispute.buyer_name).classes('text-sm font-semibold')
-                                    ui.label(dispute.buyer_email).classes('text-xs text-gray-500')
+                                    ui.label(dispute.buyer_email).classes('text-xs text-slate-500 truncate')
                                 
                                 # Amount
-                                ui.label(f'${dispute.amount}').classes('w-24 font-bold')
+                                ui.label(f'${dispute.amount}').classes('w-24 font-bold text-base')
                                 
                                 # Reason
-                                reason_short = dispute.reason.value.replace('_', ' ').title()
-                                if len(reason_short) > 30:
-                                    reason_short = reason_short[:27] + '...'
-                                ui.label(reason_short).classes('flex-1 text-sm')
+                                reason_display = dispute.reason.value.replace('_', ' ').title()
+                                if len(reason_display) > 35:
+                                    reason_display = reason_display[:32] + '...'
+                                ui.label(reason_display).classes('flex-1 text-sm text-slate-300')
                                 
                                 # Status badge
-                                with ui.row().classes('w-40'):
+                                with ui.row().classes('w-36 justify-center'):
+                                    badge_class = 'status-badge '
+                                    
                                     if dispute.status == DisputeStatus.OPEN:
-                                        ui.badge('Open', color='blue')
+                                        badge_class += 'status-open'
+                                        badge_text = 'Open'
                                     elif dispute.status == DisputeStatus.WAITING_FOR_SELLER_RESPONSE:
-                                        ui.badge('Waiting', color='purple')
+                                        badge_class += 'status-waiting'
+                                        badge_text = 'Waiting'
                                     elif dispute.status == DisputeStatus.UNDER_REVIEW:
-                                        ui.badge('Review', color='orange')
+                                        badge_class += 'status-review'
+                                        badge_text = 'Review'
                                     elif dispute.status == DisputeStatus.RESOLVED:
-                                        ui.badge('Resolved', color='green')
+                                        badge_class += 'status-resolved'
+                                        badge_text = 'Resolved'
                                     else:
-                                        ui.badge(dispute.status.value, color='gray')
+                                        badge_class += 'status-open'
+                                        badge_text = dispute.status.value[:8]
+                                    
+                                    ui.html(f'<span class="{badge_class}">{badge_text}</span>')
                                 
-                                # Recommendation
-                                if dispute.latest_analysis_id:
-                                    try:
-                                        analysis = await AgentAnalysis.get(dispute.latest_analysis_id)
-                                        if analysis:
-                                            if analysis.decision == AgentDecision.FIGHT:
-                                                ui.badge('FIGHT', color='green').classes('decision-fight')
+                                # AI Recommendation
+                                with ui.column().classes('w-28 items-center gap-1'):
+                                    if dispute.latest_analysis_id:
+                                        try:
+                                            analysis = await AgentAnalysis.get(dispute.latest_analysis_id)
+                                            if analysis:
+                                                if analysis.decision == AgentDecision.FIGHT:
+                                                    ui.html('<span class="decision-badge decision-fight" style="font-size: 10px; padding: 4px 10px;">FIGHT</span>')
+                                                else:
+                                                    ui.html('<span class="decision-badge decision-refund" style="font-size: 10px; padding: 4px 10px;">REFUND</span>')
                                             else:
-                                                ui.badge('REFUND', color='red').classes('decision-refund')
-                                            
-                                            # Win probability
-                                            ui.label(f'{analysis.win_probability:.0%}').classes('text-xs text-gray-400 ml-2')
-                                        else:
-                                            ui.label('-').classes('w-32 text-gray-500')
-                                    except:
-                                        ui.label('-').classes('w-32 text-gray-500')
-                                else:
-                                    ui.label('-').classes('w-32 text-gray-500')
+                                                ui.label('-').classes('text-slate-600')
+                                        except:
+                                            ui.label('-').classes('text-slate-600')
+                                    else:
+                                        ui.label('-').classes('text-slate-600')
+                                
+                                # Win probability
+                                with ui.column().classes('w-20 items-center'):
+                                    if dispute.latest_analysis_id:
+                                        try:
+                                            analysis = await AgentAnalysis.get(dispute.latest_analysis_id)
+                                            if analysis:
+                                                prob = analysis.win_probability
+                                                prob_class = 'text-sm font-semibold '
+                                                
+                                                if prob >= 0.7:
+                                                    prob_class += 'win-prob-high'
+                                                elif prob >= 0.4:
+                                                    prob_class += 'win-prob-medium'
+                                                else:
+                                                    prob_class += 'win-prob-low'
+                                                
+                                                ui.label(f'{prob:.0%}').classes(prob_class)
+                                            else:
+                                                ui.label('-').classes('text-slate-600')
+                                        except:
+                                            ui.label('-').classes('text-slate-600')
+                                    else:
+                                        ui.label('-').classes('text-slate-600')
                                 
                                 # Due date
-                                if dispute.due_by:
-                                    days_left = (dispute.due_by - datetime.utcnow()).days
-                                    if days_left < 0:
-                                        ui.label('OVERDUE').classes('w-32 text-red-400 font-bold text-xs')
-                                    elif days_left == 0:
-                                        ui.label('Today!').classes('w-32 text-yellow-400 font-bold text-xs')
-                                    elif days_left <= 3:
-                                        ui.label(f'{days_left}d left').classes('w-32 text-orange-400 text-xs')
+                                with ui.column().classes('w-24 items-end'):
+                                    if dispute.due_by:
+                                        days_left = (dispute.due_by - datetime.utcnow()).days
+                                        
+                                        if days_left < 0:
+                                            ui.label('OVERDUE').classes('text-xs font-bold text-red-400')
+                                        elif days_left == 0:
+                                            ui.label('TODAY').classes('text-xs font-bold text-amber-400')
+                                        elif days_left <= 2:
+                                            ui.label(f'{days_left}d left').classes('text-xs font-semibold text-amber-400')
+                                        elif days_left <= 7:
+                                            ui.label(f'{days_left}d left').classes('text-xs text-slate-300')
+                                        else:
+                                            ui.label(dispute.due_by.strftime('%m/%d')).classes('text-xs text-slate-500')
                                     else:
-                                        ui.label(f'{days_left}d left').classes('w-32 text-gray-400 text-xs')
-                                else:
-                                    ui.label('-').classes('w-32 text-gray-500 text-xs')
-                                
-                                # Actions
-                                with ui.row().classes('w-24 gap-1'):
-                                    ui.button(icon='visibility', on_click=lambda: ui.notify('Detail view coming soon!')).props('flat dense round size=sm')
+                                        ui.label('-').classes('text-xs text-slate-600')
                     
-                    if len(disputes) > 20:
-                        ui.label(f'... and {len(disputes) - 20} more').classes('text-center text-gray-500 py-4')
+                    if len(disputes) > 50:
+                        with ui.row().classes('w-full justify-center p-6 bg-slate-900/30'):
+                            ui.label(f'... and {len(disputes) - 50} more disputes').classes('text-sm text-slate-500')
+                            ui.button('Load More', icon='expand_more', on_click=lambda: ui.notify('Pagination coming soon')).props('flat size=sm')
     
     except Exception as e:
-        with ui.card().classes('glass-card w-full'):
+        with ui.card().classes('premium-card'):
             with ui.column().classes('items-center p-8 gap-4'):
                 ui.icon('error', size='xl').classes('text-red-400')
-                ui.label(f'Error loading disputes: {e}').classes('text-red-400')
-                ui.label('Make sure MongoDB is running and seeded').classes('text-gray-500')
+                ui.label('Error Loading Disputes').classes('text-xl text-red-400')
+                ui.label(str(e)).classes('text-sm text-slate-400 font-mono')
+                ui.label('Make sure MongoDB is running and seeded').classes('text-sm text-slate-500')

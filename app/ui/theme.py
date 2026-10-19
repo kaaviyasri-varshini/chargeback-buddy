@@ -1,197 +1,395 @@
-"""UI theme configuration - dark mode with electric blue accents."""
+"""UI theme configuration - premium fintech SaaS dark mode."""
 
 from nicegui import ui
 
 
-# Color palette
+# Premium fintech color palette
 COLORS = {
+    # Sidebar & backgrounds
+    "sidebar": "#0B1220",
+    "main-bg": "#F5F7FB",
+    "page-bg": "#0F172A",
+    "card-bg": "#FFFFFF",
+    
     # Primary colors
-    "navy": "#0a1929",
-    "navy-light": "#132f4c",
-    "navy-lighter": "#1e4976",
+    "primary-blue": "#2563EB",
+    "ai-violet": "#8B5CF6",
+    "success": "#16A34A",
+    "warning": "#D97706",
+    "error": "#DC2626",
     
-    # Accent colors
-    "electric-blue": "#0ea5e9",
-    "teal": "#06b6d4",
-    "blue-light": "#38bdf8",
+    # Text
+    "text-primary": "#0F172A",
+    "text-secondary": "#64748B",
+    "text-white": "#FFFFFF",
     
-    # Status colors
-    "success": "#10b981",
-    "warning": "#f59e0b",
-    "danger": "#ef4444",
-    "info": "#3b82f6",
-    
-    # Neutrals
-    "bg-dark": "#0f172a",
-    "bg-card": "#1e293b",
-    "bg-hover": "#334155",
-    "text-primary": "#f1f5f9",
-    "text-secondary": "#94a3b8",
-    "border": "#334155",
+    # Borders & neutrals
+    "border": "#E2E8F0",
+    "border-dark": "#334155",
+    "slate-800": "#1E293B",
+    "slate-700": "#334155",
 }
 
 
 def apply_theme():
-    """Apply the dark theme with custom styling."""
+    """Apply premium fintech SaaS theme with custom styling."""
     
     # Global CSS
     ui.add_head_html("""
     <style>
         /* Root variables */
         :root {
-            --color-navy: #0a1929;
-            --color-electric-blue: #0ea5e9;
-            --color-teal: #06b6d4;
-            --color-bg-dark: #0f172a;
-            --color-bg-card: #1e293b;
-            --color-text: #f1f5f9;
+            --sidebar-bg: #0B1220;
+            --page-bg: #0F172A;
+            --card-bg: #1E293B;
+            --primary-blue: #2563EB;
+            --ai-violet: #8B5CF6;
+            --success: #16A34A;
+            --warning: #D97706;
+            --error: #DC2626;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --border: #E2E8F0;
+            --border-dark: #334155;
         }
         
-        /* Body */
+        /* Body and typography */
         body {
-            background-color: var(--color-bg-dark) !important;
-            color: var(--color-text) !important;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--page-bg) !important;
+            color: var(--text-primary) !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
         }
         
-        /* Glassmorphism card */
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7) !important;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(51, 65, 85, 0.5);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        
-        /* Card hover effect */
-        .glass-card:hover {
-            border-color: var(--color-electric-blue);
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
-        }
-        
-        /* KPI card */
-        .kpi-card {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
-            border: 1px solid rgba(14, 165, 233, 0.3);
+        /* Premium card styling */
+        .premium-card {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-dark);
             border-radius: 12px;
-            padding: 24px;
-            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .premium-card:hover {
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Glass card for overlays */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.85) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.25);
+        }
+        
+        /* KPI cards */
+        .kpi-card {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--border-dark);
+            border-radius: 14px;
+            padding: 20px;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--ai-violet));
+            opacity: 0;
+            transition: opacity 0.25s ease;
         }
         
         .kpi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(14, 165, 233, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px 0 rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-blue);
         }
         
-        /* Status badges */
-        .badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.875rem;
+        .kpi-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* Status badges - refined */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
-        .badge-open { background: #3b82f6; color: white; }
-        .badge-under-review { background: #f59e0b; color: white; }
-        .badge-resolved { background: #10b981; color: white; }
-        .badge-waiting { background: #8b5cf6; color: white; }
+        .status-open {
+            background: rgba(37, 99, 235, 0.15);
+            color: #60A5FA;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+        }
+        
+        .status-waiting {
+            background: rgba(139, 92, 246, 0.15);
+            color: #A78BFA;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .status-review {
+            background: rgba(217, 119, 6, 0.15);
+            color: #FBBF24;
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+        
+        .status-resolved {
+            background: rgba(22, 163, 74, 0.15);
+            color: #4ADE80;
+            border: 1px solid rgba(22, 163, 74, 0.3);
+        }
         
         /* Decision badges */
-        .decision-fight { 
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
+        .decision-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 700;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         
-        .decision-refund { 
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        .decision-fight {
+            background: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
             color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
         }
         
-        /* Animated number */
-        @keyframes countUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .decision-refund {
+            background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
         }
         
-        .animated-number {
-            animation: countUp 0.6s ease-out;
-        }
-        
-        /* Progress bar */
-        .win-progress {
-            height: 8px;
-            border-radius: 4px;
-            background: rgba(51, 65, 85, 0.5);
-            overflow: hidden;
-        }
-        
-        .win-progress-bar {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-            transition: width 1s ease-out;
-        }
-        
-        /* Sidebar */
+        /* Sidebar navigation */
         .sidebar {
-            background: rgba(15, 23, 42, 0.95);
-            border-right: 1px solid rgba(51, 65, 85, 0.5);
+            background: var(--sidebar-bg) !important;
+            border-right: 1px solid var(--border-dark);
         }
         
-        /* Nav item */
         .nav-item {
-            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            margin: 2px 8px;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s;
-            margin: 4px 8px;
+            transition: all 0.15s ease;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
         }
         
         .nav-item:hover {
-            background: rgba(14, 165, 233, 0.1);
-            border-left: 3px solid var(--color-electric-blue);
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--text-primary);
         }
         
         .nav-item.active {
-            background: rgba(14, 165, 233, 0.2);
-            border-left: 3px solid var(--color-electric-blue);
+            background: rgba(37, 99, 235, 0.15);
+            color: #60A5FA;
+            border-left: 3px solid var(--primary-blue);
         }
         
-        /* Scrollbar */
+        /* Tables */
+        .data-table-header {
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 1px solid var(--border-dark);
+            padding: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+        
+        .data-table-row {
+            background: rgba(30, 41, 59, 0.3);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            padding: 14px 12px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        
+        .data-table-row:hover {
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 2px solid var(--primary-blue);
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Progress bars */
+        .progress-container {
+            height: 6px;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+        
+        .progress-success {
+            background: linear-gradient(90deg, var(--success), #15803D);
+        }
+        
+        .progress-warning {
+            background: linear-gradient(90deg, var(--warning), #B45309);
+        }
+        
+        .progress-error {
+            background: linear-gradient(90deg, var(--error), #B91C1C);
+        }
+        
+        /* Empty states */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 64px 32px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            opacity: 0.4;
+            margin-bottom: 16px;
+        }
+        
+        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
         
         ::-webkit-scrollbar-track {
-            background: var(--color-bg-dark);
+            background: var(--page-bg);
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--color-electric-blue);
+            background: var(--border-dark);
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--color-teal);
+            background: var(--primary-blue);
+        }
+        
+        /* Input and form styling */
+        .q-field--outlined .q-field__control {
+            border-radius: 8px;
+        }
+        
+        /* Button refinements */
+        .q-btn {
+            border-radius: 8px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Tooltip styling */
+        .q-tooltip {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border-dark);
+            border-radius: 6px;
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+        
+        /* Demo mode indicator */
+        .demo-indicator {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        /* Win probability indicator */
+        .win-prob-high {
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        .win-prob-medium {
+            color: var(--warning);
+            font-weight: 600;
+        }
+        
+        .win-prob-low {
+            color: var(--error);
+            font-weight: 600;
+        }
+        
+        /* Priority indicators */
+        .priority-urgent {
+            border-left: 4px solid var(--error);
+        }
+        
+        .priority-high {
+            border-left: 4px solid var(--warning);
+        }
+        
+        .priority-normal {
+            border-left: 4px solid var(--primary-blue);
         }
     </style>
     """)
     
-    # Quasar dark mode
+    # Enable dark mode
     ui.dark_mode().enable()
 
 
 # Utility classes
-GLASS_CARD = "glass-card p-6"
+PREMIUM_CARD = "premium-card"
+GLASS_CARD = "glass-card"
 KPI_CARD = "kpi-card"
