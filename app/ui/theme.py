@@ -55,24 +55,24 @@ def apply_theme():
         
         /* Body and typography */
         body {
-            background-color: var(--page-bg) !important;
-            color: var(--text-primary) !important;
+            background-color: #F5F7FB !important;
+            color: #0F172A !important;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
             font-size: 14px;
             line-height: 1.6;
         }
         
-        /* Premium card styling */
+        /* Premium card styling - light mode with subtle shadows */
         .premium-card {
-            background: var(--card-bg) !important;
-            border: 1px solid var(--border-dark);
+            background: #FFFFFF !important;
+            border: 1px solid #E2E8F0;
             border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
             transition: all 0.2s ease;
         }
         
         .premium-card:hover {
-            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
         }
         
         /* Glass card for overlays */
@@ -87,8 +87,8 @@ def apply_theme():
         
         /* KPI cards */
         .kpi-card {
-            background: var(--card-bg) !important;
-            border: 1px solid var(--border-dark);
+            background: #FFFFFF !important;
+            border: 1px solid #E2E8F0;
             border-radius: 14px;
             padding: 20px;
             transition: all 0.25s ease;
@@ -116,6 +116,15 @@ def apply_theme():
         
         .kpi-card:hover::before {
             opacity: 1;
+        }
+        
+        /* Text color for labels - better contrast */
+        .text-label {
+            color: #475569 !important;
+        }
+        
+        .text-secondary-improved {
+            color: #475569 !important;
         }
         
         /* Status badges - refined */
@@ -180,10 +189,81 @@ def apply_theme():
         
         /* Sidebar navigation */
         .sidebar {
-            background: var(--sidebar-bg) !important;
-            border-right: 1px solid var(--border-dark);
+            background: #FFFFFF !important;
+            border-right: 1px solid #E2E8F0;
         }
         
+        /* Enhanced nav items using ui.item component */
+        .nav-item-enhanced.q-item {
+            margin: 4px 12px;
+            min-height: 44px;
+            border-radius: 8px;
+            cursor: pointer !important;
+            transition: all 0.15s ease;
+            color: #64748B;
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            border-left: 3px solid transparent;
+            user-select: none;
+            padding: 10px 16px;
+        }
+        
+        .nav-item-enhanced.q-item:hover {
+            background: #F1F5F9 !important;
+            color: #475569;
+        }
+        
+        .nav-item-enhanced.q-item:hover .q-icon {
+            color: #334155 !important;
+        }
+        
+        .nav-item-enhanced.q-item.nav-item-active {
+            background: #EFF6FF !important;
+            color: #1E40AF;
+            border-left-color: #2563EB;
+            font-weight: 600;
+        }
+        
+        .nav-item-enhanced.q-item.nav-item-active .q-icon {
+            color: #2563EB !important;
+        }
+        
+        .nav-item-enhanced .nav-label {
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: inherit;
+            font-weight: inherit;
+        }
+        
+        /* Remove default Quasar item padding */
+        .nav-item-enhanced.q-item .q-item__section--avatar {
+            min-width: auto;
+            padding-right: 12px;
+        }
+        
+        .nav-item-enhanced.q-item .q-item__section--main {
+            flex: 1;
+        }
+        
+        .nav-item-enhanced.q-item .q-item__section--side {
+            padding-left: 8px;
+        }
+        
+        /* Clickable elements class */
+        .clickable-element {
+            cursor: pointer !important;
+            user-select: none;
+        }
+        
+        .clickable-element * {
+            cursor: pointer !important;
+            user-select: none;
+        }
+        
+        /* Old nav-item styles (legacy, keep for compatibility) */
         .nav-item {
             display: flex;
             align-items: center;
@@ -192,44 +272,45 @@ def apply_theme():
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.15s ease;
-            color: var(--text-secondary);
+            color: #64748B;
             font-size: 14px;
             font-weight: 500;
         }
         
         .nav-item:hover {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--text-primary);
+            background: #F8FAFC;
+            color: #334155;
         }
         
         .nav-item.active {
-            background: rgba(37, 99, 235, 0.15);
-            color: #60A5FA;
-            border-left: 3px solid var(--primary-blue);
+            background: #EFF6FF;
+            color: #2563EB;
+            border-left: 3px solid #2563EB;
+            font-weight: 600;
         }
         
         /* Tables */
         .data-table-header {
-            background: rgba(30, 41, 59, 0.5);
-            border-bottom: 1px solid var(--border-dark);
+            background: #F8FAFC;
+            border-bottom: 1px solid #E2E8F0;
             padding: 12px;
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: var(--text-secondary);
+            color: #64748B;
         }
         
         .data-table-row {
-            background: rgba(30, 41, 59, 0.3);
-            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            background: #FFFFFF;
+            border-bottom: 1px solid #F1F5F9;
             padding: 14px 12px;
             transition: all 0.15s ease;
             cursor: pointer;
         }
         
         .data-table-row:hover {
-            background: rgba(37, 99, 235, 0.1);
+            background: #F8FAFC;
             border-left: 2px solid var(--primary-blue);
         }
         
@@ -296,13 +377,17 @@ def apply_theme():
             justify-content: center;
             padding: 64px 32px;
             text-align: center;
-            color: var(--text-secondary);
+            color: #64748B;
         }
         
         .empty-state-icon {
             font-size: 48px;
             opacity: 0.4;
             margin-bottom: 16px;
+        }
+        
+        .empty-state-title {
+            color: #334155 !important;
         }
         
         /* Scrollbar styling */
@@ -382,11 +467,64 @@ def apply_theme():
         .priority-normal {
             border-left: 4px solid var(--primary-blue);
         }
+        
+        /* Skeleton loaders */
+        .skeleton {
+            animation: skeleton-loading 1s linear infinite alternate;
+            background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 50%, #E2E8F0 75%);
+            background-size: 200% 100%;
+        }
+        
+        @keyframes skeleton-loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+        
+        .skeleton-card {
+            height: 120px;
+            border-radius: 12px;
+        }
+        
+        .skeleton-text {
+            height: 16px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .skeleton-title {
+            height: 24px;
+            width: 60%;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
     </style>
     """)
     
     # Enable dark mode
     ui.dark_mode().enable()
+    
+    # Late-injected CSS to override Quasar item styles
+    ui.add_head_html("""
+    <style>
+        /* Late CSS injection to ensure pointer cursor on nav items */
+        .nav-item-enhanced.q-item {
+            cursor: pointer !important;
+        }
+        
+        .nav-item-enhanced.q-item * {
+            cursor: pointer !important;
+        }
+        
+        /* Ensure proper spacing and remove default Quasar focus ring */
+        .nav-item-enhanced.q-item.q-focusable:focus > .q-focus-helper {
+            opacity: 0 !important;
+        }
+    </style>
+    """)
 
 
 # Utility classes

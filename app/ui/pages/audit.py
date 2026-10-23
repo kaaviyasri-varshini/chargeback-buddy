@@ -13,8 +13,8 @@ async def audit_page():
     # Page header
     with ui.row().classes('w-full items-center justify-between mb-8'):
         with ui.column().classes('gap-1'):
-            ui.label('Audit Log').classes('text-3xl font-bold')
-            ui.label('Complete history of all agent actions and human decisions').classes('text-sm text-slate-400')
+            ui.label('Audit Log').classes('text-3xl font-bold text-slate-900')
+            ui.label('Complete history of all agent actions and human decisions').classes('text-sm text-slate-600')
         
         ui.button('Refresh', icon='refresh', on_click=lambda: ui.notify('Refreshed', type='positive')).props('outline size=sm')
     
@@ -102,7 +102,7 @@ async def audit_page():
                                 with ui.column().classes('gap-2 flex-1'):
                                     # Action
                                     with ui.row().classes('items-center gap-2'):
-                                        ui.label(log.action.replace('_', ' ').title()).classes('text-base font-semibold')
+                                        ui.label(log.action.replace('_', ' ').title()).classes('text-base font-semibold text-slate-900')
                                         
                                         # Actor badge
                                         if log.actor == 'agent':
@@ -112,7 +112,7 @@ async def audit_page():
                                     
                                     # Reasoning
                                     if log.reasoning:
-                                        ui.label(log.reasoning).classes('text-sm text-slate-300')
+                                        ui.label(log.reasoning).classes('text-sm text-slate-700')
                                     
                                     # Metadata row
                                     with ui.row().classes('items-center gap-3 mt-1'):

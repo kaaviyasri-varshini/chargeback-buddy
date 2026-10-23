@@ -104,4 +104,5 @@ if __name__ in {"__main__", "__mp_main__"}:
         reload=False,
         show=True,
         favicon="💼",
+        storage_secret="chargeback-buddy-secret-key-change-in-production",  # Enable session storage
     )

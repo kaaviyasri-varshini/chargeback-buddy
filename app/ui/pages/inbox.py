@@ -13,8 +13,8 @@ async def inbox_page():
     # Page header
     with ui.row().classes('w-full items-center justify-between mb-8'):
         with ui.column().classes('gap-1'):
-            ui.label('Disputes Inbox').classes('text-3xl font-bold')
-            ui.label('Manage and review all PayPal disputes').classes('text-sm text-slate-400')
+            ui.label('Disputes Inbox').classes('text-3xl font-bold text-slate-900')
+            ui.label('Manage and review all PayPal disputes').classes('text-sm text-slate-600')
         
         with ui.row().classes('gap-2'):
             ui.button('Refresh', icon='refresh', on_click=lambda: ui.notify('Refreshed', type='positive')).props('outline size=sm')
@@ -67,13 +67,13 @@ async def inbox_page():
                 resolved_count = sum(1 for d in disputes if d.status == DisputeStatus.RESOLVED)
                 
                 with ui.row().classes('items-center gap-2'):
-                    ui.label(f'{len(disputes)} total').classes('text-sm font-semibold text-slate-300')
-                    ui.label('•').classes('text-slate-600')
-                    ui.label(f'{open_count} open').classes('text-sm text-blue-400')
-                    ui.label('•').classes('text-slate-600')
-                    ui.label(f'{review_count} in review').classes('text-sm text-amber-400')
-                    ui.label('•').classes('text-slate-600')
-                    ui.label(f'{resolved_count} resolved').classes('text-sm text-green-400')
+                    ui.label(f'{len(disputes)} total').classes('text-sm font-semibold text-slate-700')
+                    ui.label('•').classes('text-slate-400')
+                    ui.label(f'{open_count} open').classes('text-sm text-blue-600')
+                    ui.label('•').classes('text-slate-400')
+                    ui.label(f'{review_count} in review').classes('text-sm text-amber-600')
+                    ui.label('•').classes('text-slate-400')
+                    ui.label(f'{resolved_count} resolved').classes('text-sm text-green-600')
             
             # Disputes table
             with ui.card().classes('premium-card p-0 overflow-hidden'):
@@ -108,8 +108,8 @@ async def inbox_page():
                                 
                                 # Buyer info
                                 with ui.column().classes('w-48 gap-0'):
-                                    ui.label(dispute.buyer_name).classes('text-sm font-semibold')
-                                    ui.label(dispute.buyer_email).classes('text-xs text-slate-500 truncate')
+                                    ui.label(dispute.buyer_name).classes('text-sm font-semibold text-slate-900')
+                                    ui.label(dispute.buyer_email).classes('text-xs text-slate-600 truncate')
                                 
                                 # Amount
                                 ui.label(f'${dispute.amount}').classes('w-24 font-bold text-base')
@@ -118,7 +118,7 @@ async def inbox_page():
                                 reason_display = dispute.reason.value.replace('_', ' ').title()
                                 if len(reason_display) > 35:
                                     reason_display = reason_display[:32] + '...'
-                                ui.label(reason_display).classes('flex-1 text-sm text-slate-300')
+                                ui.label(reason_display).classes('flex-1 text-sm text-slate-700')
                                 
                                 # Status badge
                                 with ui.row().classes('w-36 justify-center'):
