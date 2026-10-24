@@ -140,7 +140,12 @@ class AgentAnalysis(Document):
     dispute_id: str
     decision: AgentDecision
     confidence: float  # 0.0 to 1.0
-    win_probability: float  # 0.0 to 1.0
+    win_probability: float  # 0.0 to 1.0 (blended probability)
+    
+    # Probability breakdown for transparency
+    heuristic_probability: Optional[float] = None  # From rule-based scorer
+    llm_probability: Optional[float] = None  # From LLM
+    # win_probability is the blended value
     
     # Expected value calculations
     refund_loss: Decimal

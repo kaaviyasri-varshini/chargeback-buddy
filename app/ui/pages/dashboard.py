@@ -8,6 +8,7 @@ from nicegui import ui
 from beanie.operators import In
 
 from app.db.documents import Dispute, AuditLog, AgentAnalysis, DisputeStatus, AgentDecision
+from app.services.savings import calculate_savings
 
 
 def _get_activity_title(action: str) -> str:
@@ -214,6 +215,61 @@ async def dashboard_page():
     with ui.grid(columns='1fr 380px').classes('w-full gap-6'):
         # Left Column - Analytics and Priority Queue
         with ui.column().classes('gap-6'):
+            # Savings vs Baselines Card (NEW)
+            try:
+                savings_results = await calculate_savings()
+                if savings_results["total_disputes"] > 0:
+                    with ui.card().classes('premium-card p-6'):
+                        ui.label('Savings vs. Baselines').classes('text-xl font-semibold text-slate-900 mb-4')
+                        
+                        cb = savings_results["chargebach_buddy"]
+                        savings_refund = savings_results["savings_vs_refund"]
+                        savings_fight = savings_results["savings_vs_fight"]
+                        
+                        # Simulated data notice
+                        with ui.row().classes('items-center gap-2 mb-4 p-3 bg-amber-50 rounded-lg'):
+                            ui.icon('info', size='sm').classes('text-amber-600')
+                            ui.label('Simulated outcomes for demonstration (not live PayPal data)').classes('text-xs text-amber-700')
+                        
+                        # Summary sentence
+                        best_baseline = max(savings_results["always_refund"].total_net, savings_results["always_fight"].total_net)
+                        total_savings = cb.total_net - best_baseline
+                        
+                        if total_savings > 0:
+                            summary = f"On the {savings_results['total_disputes']} sample disputes, following ChargeBack Buddy saved ${abs(total_savings):,.2f} versus the best baseline."
+                        else:
+                            summary = f"On the {savings_results['total_disputes']} sample disputes, ChargeBack Buddy is being refined to beat the best baseline."
+                        
+                        ui.label(summary).classes('text-base text-slate-700 mb-4 font-medium')
+                        
+                        # Strategy comparison grid
+                        with ui.grid(columns=3).classes('gap-4 w-full'):
+                            # ChargeBack Buddy
+                            with ui.card().classes('premium-card p-4 bg-gradient-to-br from-violet-50 to-purple-50'):
+                                ui.label('ChargeBack Buddy').classes('text-sm font-semibold text-violet-900 mb-2')
+                                ui.label(f'${cb.total_net:,.2f}').classes('text-2xl font-bold text-violet-600')
+                                ui.label(f'Fought {cb.disputes_fought}, Won {cb.wins}').classes('text-xs text-slate-600')
+                            
+                            # Always Refund
+                            with ui.card().classes('premium-card p-4'):
+                                ui.label('Always Refund').classes('text-sm font-semibold text-slate-700 mb-2')
+                                ui.label(f'${savings_results["always_refund"].total_net:,.2f}').classes('text-2xl font-bold text-slate-600')
+                                if savings_refund > 0:
+                                    ui.label(f'↓ ${savings_refund:,.2f} worse').classes('text-xs text-red-600 font-semibold')
+                                else:
+                                    ui.label(f'↑ ${abs(savings_refund):,.2f} better').classes('text-xs text-green-600 font-semibold')
+                            
+                            # Always Fight
+                            with ui.card().classes('premium-card p-4'):
+                                ui.label('Always Fight').classes('text-sm font-semibold text-slate-700 mb-2')
+                                ui.label(f'${savings_results["always_fight"].total_net:,.2f}').classes('text-2xl font-bold text-slate-600')
+                                if savings_fight > 0:
+                                    ui.label(f'↓ ${savings_fight:,.2f} worse').classes('text-xs text-red-600 font-semibold')
+                                else:
+                                    ui.label(f'↑ ${abs(savings_fight):,.2f} better').classes('text-xs text-green-600 font-semibold')
+            except Exception as e:
+                logger.error(f"Error calculating savings: {e}")
+            
             # Dispute Analytics
             with ui.card().classes('premium-card p-6'):
                 ui.label('Dispute Analytics').classes('text-xl font-semibold text-slate-900 mb-4')
